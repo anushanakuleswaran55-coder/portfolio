@@ -88,14 +88,12 @@ section[id] { scroll-margin-top: 5rem; }
   .dev-logo__bracket { transition: none; }
 }
 
-/* Hero starry background */
+/* Global starry background: one fixed layer behind all page content */
 .star-field {
-  position: absolute;
+  position: fixed;
   inset: 0;
+  z-index: -1;
   pointer-events: none;
-  /* dim the stars behind the hero text so readability is never affected */
-  -webkit-mask-image: radial-gradient(ellipse 38% 34% at 50% 48%, rgb(0 0 0 / 0.2), #000 100%);
-  mask-image: radial-gradient(ellipse 38% 34% at 50% 48%, rgb(0 0 0 / 0.2), #000 100%);
 }
 .star {
   position: absolute;

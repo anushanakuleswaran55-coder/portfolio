@@ -13,7 +13,7 @@ function mulberry32(seed: number) {
   }
 }
 
-export default function StarField({ count = 70 }: { count?: number }) {
+export default function StarField({ count = 50 }: { count?: number }) {
   const stars = useMemo<Star[]>(() => {
     const rand = mulberry32(2024)
     return Array.from({ length: count }, () => ({
@@ -22,7 +22,7 @@ export default function StarField({ count = 70 }: { count?: number }) {
       size: 1 + rand() * 2, // 1px - 3px
       delay: rand() * 8,
       duration: 4 + rand() * 5, // slow: 4s - 9s
-      peak: 0.45 + rand() * 0.5,
+      peak: 0.35 + rand() * 0.45,
       blue: rand() > 0.45,
     }))
   }, [count])
