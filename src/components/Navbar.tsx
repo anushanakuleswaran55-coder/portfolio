@@ -18,9 +18,10 @@ export default function Navbar() {
       className="glass fixed inset-x-0 top-0 z-50 border-x-0 border-t-0"
     >
       <nav aria-label="Primary" className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5">
-        <a href="#home" className="font-display text-xl font-bold" aria-label="Home">
-          <span className="text-gradient">{profile.initials}</span>
-          <span className="text-sky">.</span>
+        <a href="#home" className="dev-logo" aria-label={`${profile.name} - Home`}>
+          <span className="dev-logo__bracket dev-logo__bracket--left" aria-hidden="true">&lt;</span>
+          <span className="dev-logo__slash" aria-hidden="true">/</span>
+          <span className="dev-logo__bracket dev-logo__bracket--right" aria-hidden="true">&gt;</span>
         </a>
 
         <ul className="hidden items-center gap-1 md:flex">
