@@ -32,12 +32,6 @@ export default function Hero() {
 
       <div className="relative mx-auto w-full max-w-6xl px-5 py-16 text-center">
         <motion.div variants={container} initial="hidden" animate="show">
-          <motion.p
-            variants={item}
-            className="mx-auto mb-4 inline-flex items-center gap-2 rounded-full border border-sky/30 bg-sky/10 px-3 py-1 text-xs font-medium text-sky"
-          >
-            <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-sky" /> Open to opportunities
-          </motion.p>
           <motion.h1 variants={item} className="font-display text-5xl font-bold leading-tight tracking-tight sm:text-7xl">
             {first}
             <br />
