@@ -22,8 +22,11 @@ export default function Hero() {
   })
   const [first, ...rest] = profile.name.toUpperCase().split(' ')
   return (
-    <section id="home" className="relative flex min-h-screen items-center overflow-hidden pt-16">
-      <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+    <section id="home" className="relative flex items-center overflow-hidden pb-14 pt-28 sm:pb-16 sm:pt-32">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 [mask-image:linear-gradient(to_bottom,black_70%,transparent)]"
+      >
         <motion.div
           className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-brand/25 blur-[120px]"
           animate={{ y: [0, 30, 0], x: [0, 20, 0] }}
@@ -37,9 +40,9 @@ export default function Hero() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgb(148_163_184/0.08)_1px,transparent_0)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
       </div>
 
-      <div className="relative mx-auto w-full max-w-6xl px-5 py-16 text-center">
+      <div className="relative mx-auto w-full max-w-6xl px-5 text-center">
         <motion.div variants={container} initial={reduceMotion ? false : 'hidden'} animate="show">
-          <h1 className="font-display text-5xl font-bold leading-tight tracking-tight sm:text-7xl">
+          <h1 className="font-display text-[clamp(1.9rem,9.6vw,3rem)] font-bold leading-tight tracking-tight sm:text-7xl">
             <span className="block">
               <motion.span className="inline-block" {...nameLine(0)}>
                 {first}
@@ -51,14 +54,14 @@ export default function Hero() {
               </motion.span>
             </span>
           </h1>
-          <motion.p variants={item} className="mt-5 text-lg font-medium text-sky">
+          <motion.p variants={item} className="mt-4 text-lg font-medium text-sky">
             {profile.role}
           </motion.p>
           <motion.p variants={item} className="mx-auto mt-4 max-w-2xl text-lg italic text-muted">
             &ldquo;{profile.tagline}&rdquo;
           </motion.p>
 
-          <motion.div variants={item} className="mt-8 flex flex-wrap justify-center gap-3">
+          <motion.div variants={item} className="mt-7 flex flex-wrap justify-center gap-3">
             <a
               href="#projects"
               className={`${btn} bg-brand text-white shadow-lg shadow-brand/30 hover:bg-blue-500 hover:shadow-brand/50`}
@@ -73,7 +76,7 @@ export default function Hero() {
             </a>
           </motion.div>
 
-          <motion.div variants={item} className="mt-8 flex justify-center gap-3">
+          <motion.div variants={item} className="mt-7 flex justify-center gap-3">
             <a
               href={profile.linkedin}
               target="_blank"
