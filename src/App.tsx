@@ -13,7 +13,7 @@ import StarField from './components/StarField'
 export default function App() {
   return (
     <>
-      <StarField count={50} />
+      <StarField />
       <ScrollProgress />
       <Navbar />
       <main>
