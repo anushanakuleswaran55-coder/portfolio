@@ -1,6 +1,6 @@
 import { useMemo, type CSSProperties } from 'react'
 
-type Tone = 'white' | 'sky' | 'royal'
+type Tone = 'white' | 'sky'
 type Star = { x: number; y: number; size: number; delay: number; duration: number; peak: number; tone: Tone }
 
 // Small seeded PRNG so the star layout is identical on every render and reload.
@@ -31,8 +31,8 @@ export default function StarField() {
           size: rand() < 0.25 ? 3 + rand() * 1.5 : 4.5 + rand() * 3.5, // a few small, most 4.5 - 8px
           delay: rand() * 3,
           duration: 1.2 + rand() * 1.3, // 1.2s - 2.5s
-          peak: 0.55 + rand() * 0.35,
-          tone: t < 0.45 ? 'white' : t < 0.85 ? 'sky' : 'royal',
+          peak: 0.7 + rand() * 0.25,
+          tone: t < 0.5 ? 'white' : 'sky',
         })
       }
     }
