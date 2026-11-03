@@ -1,18 +1,25 @@
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Download, Mail } from 'lucide-react'
 import { profile } from '../data/portfolio'
 import { GithubIcon, LinkedinIcon } from './Icons'
 
-const container = { hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 0.3 } } }
+// Name lines animate first (0s and 0.2s); everything else follows in a subtle stagger.
+const container = { hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.55 } } }
 const item = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.6, ease: 'easeOut' as const } },
+  hidden: { opacity: 0, y: 16 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' as const } },
 }
 
 const btn =
   'inline-flex items-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition-all duration-300 hover:-translate-y-0.5'
 
 export default function Hero() {
+  const reduceMotion = useReducedMotion()
+  const nameLine = (delay: number) => ({
+    initial: reduceMotion ? false : { opacity: 0, y: 28 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.7, delay, ease: 'easeOut' as const },
+  })
   const [first, ...rest] = profile.name.toUpperCase().split(' ')
   return (
     <section id="home" className="relative flex min-h-screen items-center overflow-hidden pt-16">
@@ -31,12 +38,19 @@ export default function Hero() {
       </div>
 
       <div className="relative mx-auto w-full max-w-6xl px-5 py-16 text-center">
-        <motion.div variants={container} initial="hidden" animate="show">
-          <motion.h1 variants={item} className="font-display text-5xl font-bold leading-tight tracking-tight sm:text-7xl">
-            {first}
-            <br />
-            <span className="text-gradient">{rest.join(' ')}</span>
-          </motion.h1>
+        <motion.div variants={container} initial={reduceMotion ? false : 'hidden'} animate="show">
+          <h1 className="font-display text-5xl font-bold leading-tight tracking-tight sm:text-7xl">
+            <span className="block">
+              <motion.span className="inline-block" {...nameLine(0)}>
+                {first}
+              </motion.span>
+            </span>
+            <span className="block">
+              <motion.span className="text-gradient inline-block" {...nameLine(0.2)}>
+                {rest.join(' ')}
+              </motion.span>
+            </span>
+          </h1>
           <motion.p variants={item} className="mt-5 text-lg font-medium text-sky">
             {profile.role}
           </motion.p>
