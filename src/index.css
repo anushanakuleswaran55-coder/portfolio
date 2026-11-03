@@ -87,3 +87,34 @@ section[id] { scroll-margin-top: 5rem; }
   .dev-logo { animation: none; filter: drop-shadow(0 0 6px rgb(56 189 248 / 0.55)); }
   .dev-logo__bracket { transition: none; }
 }
+
+/* Hero starry background */
+.star-field {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* dim the stars behind the hero text so readability is never affected */
+  -webkit-mask-image: radial-gradient(ellipse 38% 34% at 50% 48%, rgb(0 0 0 / 0.2), #000 100%);
+  mask-image: radial-gradient(ellipse 38% 34% at 50% 48%, rgb(0 0 0 / 0.2), #000 100%);
+}
+.star {
+  position: absolute;
+  border-radius: 9999px;
+  opacity: 0.1;
+  animation: star-twinkle ease-in-out infinite;
+}
+.star--white {
+  background: var(--color-fg);
+  box-shadow: 0 0 4px 0 rgb(248 250 252 / 0.6);
+}
+.star--blue {
+  background: var(--color-sky);
+  box-shadow: 0 0 6px 1px rgb(56 189 248 / 0.7);
+}
+@keyframes star-twinkle {
+  0%, 100% { opacity: 0.1; transform: scale(0.8); }
+  50% { opacity: var(--star-peak, 0.8); transform: scale(1); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .star { animation: none; opacity: 0.45; transform: none; }
+}

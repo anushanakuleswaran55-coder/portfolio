@@ -2,6 +2,7 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Download, Mail } from 'lucide-react'
 import { profile } from '../data/portfolio'
 import { GithubIcon, LinkedinIcon } from './Icons'
+import StarField from './StarField'
 
 // Name lines animate first (0s and 0.2s); everything else follows in a subtle stagger.
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.55 } } }
@@ -24,6 +25,7 @@ export default function Hero() {
   return (
     <section id="home" className="relative flex min-h-screen items-center overflow-hidden pt-16">
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
+        <StarField />
         <motion.div
           className="absolute -left-32 top-20 h-96 w-96 rounded-full bg-brand/25 blur-[120px]"
           animate={{ y: [0, 30, 0], x: [0, 20, 0] }}
