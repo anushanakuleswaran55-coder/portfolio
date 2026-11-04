@@ -75,6 +75,7 @@ export default function Contact() {
         body: JSON.stringify({
           name: v('name'),
           email: v('email'), // Formspree uses this as the Reply-To address
+          _replyto: v('email'),
           subject: v('subject'),
           message: v('message'),
           _subject: notificationSubject(v('email')),
