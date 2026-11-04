@@ -68,7 +68,7 @@ export default function Hero() {
             >
               View My Projects <ArrowRight size={16} />
             </a>
-            <a href={profile.cvUrl} download="Anusha_Nakuleshwaran_CV_updated.pdf" className={`${btn} glass text-fg hover:border-sky/40`}>
+            <a href={profile.cvUrl} download="Nakuleshwaran_Anusha_CV.pdf" className={`${btn} glass text-fg hover:border-sky/40`}>
               <Download size={16} /> Download CV
             </a>
             <a href="#contact" className={`${btn} border border-white/10 text-fg hover:border-sky/40 hover:text-sky`}>
