@@ -10,18 +10,8 @@ const field =
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-// Full Formspree endpoint, e.g. https://formspree.io/f/abcdwxyz (public by design, not a secret).
-// Set VITE_FORMSPREE_ENDPOINT in .env and in your hosting provider's environment settings.
-const ENDPOINT = import.meta.env.VITE_FORMSPREE_ENDPOINT?.trim()
-const ENDPOINT_RE = /^https:\/\/formspree\.io\/f\/[A-Za-z0-9]+$/
-
-// Formspree rejected some non-ASCII characters in `_subject` (HTTP 400), so keep the
-// notification subject to safe characters. Shows the visitor's email, with a fixed subject as the fallback.
-const safe = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9 .'_@+-]/g, '').replace(/\s+/g, ' ').trim().slice(0, 60)
-const notificationSubject = (email: string) => {
-  const who = safe(email)
-  return who ? `Portfolio Contact - ${who}` : 'Portfolio Contact - New Message'
-}
+// Messages are posted to the Vercel serverless function in /api/contact, which sends the email.
+const ENDPOINT = '/api/contact'
 
 type Status = 'idle' | 'sending' | 'success' | 'error'
 type Field = 'name' | 'email' | 'subject' | 'message'
@@ -60,13 +50,6 @@ export default function Contact() {
       return
     }
 
-    if (!ENDPOINT || !ENDPOINT_RE.test(ENDPOINT)) {
-      console.error('Formspree is not configured. Set VITE_FORMSPREE_ENDPOINT=https://formspree.io/f/<id> in .env and restart the dev server.')
-      setErrorMsg(<>The contact form is not configured yet, so your message was not sent. Please email me at {mailLink}.</>)
-      setStatus('error')
-      return
-    }
-
     setStatus('sending')
     try {
       const res = await fetch(ENDPOINT, {
@@ -74,17 +57,15 @@ export default function Contact() {
         headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
         body: JSON.stringify({
           name: v('name'),
-          email: v('email'), // Formspree uses this as the Reply-To address
-          _replyto: v('email'),
+          email: v('email'),
           subject: v('subject'),
           message: v('message'),
-          _subject: notificationSubject(v('email')),
         }),
       })
       const data = await res.json().catch(() => ({}))
-      // Only treat the send as successful when Formspree explicitly confirms acceptance.
+      // Only treat the send as successful when the server explicitly confirms the email was sent.
       if (!res.ok || data.ok !== true || data.error || data.errors) {
-        const detail = data.errors?.map((x: { message: string }) => x.message).join(', ') ?? data.error
+        const detail = data.error
         throw new Error(detail ?? `HTTP ${res.status}`)
       }
       setStatus('success')
