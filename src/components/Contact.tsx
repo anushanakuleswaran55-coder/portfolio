@@ -1,5 +1,5 @@
-import { useState, type FormEvent } from 'react'
-import { Mail, Phone, Send, User } from 'lucide-react'
+import { useState, type FormEvent, type ReactNode } from 'react'
+import { Loader2, Mail, Phone, Send, User } from 'lucide-react'
 import { profile } from '../data/portfolio'
 import { GithubIcon, LinkedinIcon } from './Icons'
 import Reveal from './Reveal'
@@ -10,12 +10,26 @@ const field =
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
 
-type Status = 'idle' | 'opened'
+// Full Formspree endpoint, e.g. https://formspree.io/f/abcdwxyz (public by design, not a secret).
+// Set VITE_FORMSPREE_ENDPOINT in .env and in your hosting provider's environment settings.
+const ENDPOINT = import.meta.env.VITE_FORMSPREE_ENDPOINT?.trim() || 'https://formspree.io/f/xgaapjwk'
+const ENDPOINT_RE = /^https:\/\/formspree\.io\/f\/[A-Za-z0-9]+$/
+
+// Formspree rejected some non-ASCII characters in `_subject` (HTTP 400), so keep the
+// notification subject to safe characters. Shows the visitor's email, with a fixed subject as the fallback.
+const safe = (t: string) => t.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9 .'_@+-]/g, '').replace(/\s+/g, ' ').trim().slice(0, 60)
+const notificationSubject = (email: string) => {
+  const who = safe(email)
+  return who ? `Portfolio Contact - ${who}` : 'Portfolio Contact - New Message'
+}
+
+type Status = 'idle' | 'sending' | 'success' | 'error'
 type Field = 'name' | 'email' | 'subject' | 'message'
 type Errors = Partial<Record<Field, string>>
 
 export default function Contact() {
   const [status, setStatus] = useState<Status>('idle')
+  const [errorMsg, setErrorMsg] = useState<ReactNode>(null)
   const [errors, setErrors] = useState<Errors>({})
 
   const mailLink = (
@@ -24,9 +38,11 @@ export default function Contact() {
     </a>
   )
 
-  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const d = new FormData(e.currentTarget)
+    if (status === 'sending') return
+    const form = e.currentTarget
+    const d = new FormData(form)
     const v = (k: string) => String(d.get(k) ?? '').trim()
 
     const found: Errors = {}
@@ -38,16 +54,49 @@ export default function Contact() {
     setErrors(found)
     if (Object.keys(found).length) return
 
-    // Honeypot: bots fill this hidden field; do nothing.
-    if (v('_gotcha')) return
+    // Honeypot: bots fill this hidden field; send nothing and show nothing.
+    if (v('_gotcha')) {
+      form.reset()
+      return
+    }
 
-    // Open the visitor's own email app with everything prefilled; they send it from their account.
-    const body = `Name: ${v('name')}
-Email: ${v('email')}
+    if (!ENDPOINT || !ENDPOINT_RE.test(ENDPOINT)) {
+      console.error('Formspree is not configured. Set VITE_FORMSPREE_ENDPOINT=https://formspree.io/f/<id> in .env and restart the dev server.')
+      setErrorMsg(<>The contact form is not configured yet, so your message was not sent. Please email me at {mailLink}.</>)
+      setStatus('error')
+      return
+    }
 
-${v('message')}`
-    window.location.href = `mailto:${profile.email}?subject=${encodeURIComponent(v('subject'))}&body=${encodeURIComponent(body)}`
-    setStatus('opened')
+    setStatus('sending')
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify({
+          name: v('name'),
+          email: v('email'), // Formspree uses this as the Reply-To address
+          _replyto: v('email'),
+          subject: v('subject'),
+          message: v('message'),
+          _subject: notificationSubject(v('email')),
+        }),
+      })
+      const data = await res.json().catch(() => ({}))
+      // Only treat the send as successful when Formspree explicitly confirms acceptance.
+      if (!res.ok || data.ok !== true || data.error || data.errors) {
+        const detail = data.errors?.map((x: { message: string }) => x.message).join(', ') ?? data.error
+        throw new Error(detail ?? `HTTP ${res.status}`)
+      }
+      setStatus('success')
+      form.reset()
+    } catch (err) {
+      console.error('Contact form send failed:', err)
+      const text = err instanceof Error ? err.message : ''
+      setErrorMsg(
+        <>Sorry, your message could not be sent{text ? ` (${text})` : ''}. Please try again or email me at {mailLink}.</>,
+      )
+      setStatus('error')
+    }
   }
 
   const fieldError = (k: Field) =>
@@ -113,16 +162,20 @@ ${v('message')}`
               </div>
               <button
                 type="submit"
-                className="inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand/30 transition hover:-translate-y-0.5 hover:bg-blue-500"
+                disabled={status === 'sending'}
+                className="inline-flex items-center gap-2 rounded-xl bg-brand px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand/30 transition hover:-translate-y-0.5 hover:bg-blue-500 disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:translate-y-0"
               >
-                <Send size={16} />
-                Send Message
+                {status === 'sending' ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
+                {status === 'sending' ? 'Sending...' : 'Send Message'}
               </button>
               <div role="status" aria-live="polite" className="text-sm">
-                {status === 'opened' && (
-                  <p className="rounded-xl border border-sky/30 bg-sky/10 p-3 text-sky">
-                    Your email app should open with the message ready. Press Send there to deliver it. If nothing opened, email me at {mailLink}.
+                {status === 'success' && (
+                  <p className="rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-3 text-emerald-300">
+                    Message sent successfully!
                   </p>
+                )}
+                {status === 'error' && (
+                  <p className="rounded-xl border border-red-400/30 bg-red-400/10 p-3 text-red-300">{errorMsg}</p>
                 )}
               </div>
             </form>
