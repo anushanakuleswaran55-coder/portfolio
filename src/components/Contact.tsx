@@ -82,7 +82,8 @@ export default function Contact() {
         }),
       })
       const data = await res.json().catch(() => ({}))
-      if (!res.ok || data.error || data.errors) {
+      // Only treat the send as successful when Formspree explicitly confirms acceptance.
+      if (!res.ok || data.ok !== true || data.error || data.errors) {
         const detail = data.errors?.map((x: { message: string }) => x.message).join(', ') ?? data.error
         throw new Error(detail ?? `HTTP ${res.status}`)
       }
