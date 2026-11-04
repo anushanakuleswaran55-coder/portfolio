@@ -2,7 +2,6 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { ArrowRight, Download, Mail } from 'lucide-react'
 import { profile } from '../data/portfolio'
 import { GithubIcon, LinkedinIcon } from './Icons'
-import DevSymbols from './DevSymbols'
 
 // Name lines animate first (0s and 0.2s); everything else follows in a subtle stagger.
 const container = { hidden: {}, show: { transition: { staggerChildren: 0.1, delayChildren: 0.55 } } }
@@ -40,8 +39,6 @@ export default function Hero() {
         />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_1px_1px,rgb(148_163_184/0.08)_1px,transparent_0)] [background-size:32px_32px] [mask-image:radial-gradient(ellipse_at_center,black,transparent_75%)]" />
       </div>
-
-      <DevSymbols />
 
       <div className="relative mx-auto w-full max-w-6xl px-5 text-center">
         <motion.div variants={container} initial={reduceMotion ? false : 'hidden'} animate="show">
