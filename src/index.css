@@ -118,3 +118,27 @@ section[id] { scroll-margin-top: 5rem; }
 @media (prefers-reduced-motion: reduce) {
   .star { animation: none; opacity: 0.6; transform: translate(-50%, -50%); }
 }
+
+/* Hero floating developer symbols */
+.dev-symbol {
+  position: absolute;
+  font-family: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  will-change: transform, opacity;
+  animation: dev-symbol-float ease-in-out infinite;
+}
+.dev-symbol--white { color: rgb(248 250 252); --sym-peak: 0.16; }
+.dev-symbol--sky { color: rgb(56 189 248); --sym-peak: 0.22; }
+@media (max-width: 767px) {
+  .dev-symbol--desktop { display: none; }
+  .dev-symbol { --sym-peak: 0.12; }
+}
+@keyframes dev-symbol-float {
+  0%, 100% { opacity: 0; transform: translateY(8px) rotate(-3deg); }
+  50% { opacity: var(--sym-peak, 0.18); transform: translateY(-14px) rotate(3deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .dev-symbol { animation: none; opacity: 0.1; }
+}
